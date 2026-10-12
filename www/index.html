@@ -23,18 +23,18 @@
         #game-arena { position: relative; flex: 1; background: linear-gradient(to bottom, #150d20, #2c122b, #0b050a); overflow: hidden; display: flex; align-items: flex-end; }
         .floor { position: absolute; bottom: 0; width: 100%; height: 25px; background: linear-gradient(to top, #3a0000, #150813); border-top: 2px solid #f43b43; }
         
-        /* Lutador Base com a Sprite Sheet Real */
-        .fighter { position: absolute; bottom: 20px; width: 140px; height: 180px; display: flex; flex-direction: column; align-items: center; }
+        /* Lutador Base */
+        .fighter { position: absolute; bottom: 20px; width: 110px; height: 170px; display: flex; flex-direction: column; align-items: center; }
         
-        /* Contentor do Sprite a apontar para o nome exato da imagem */
-        .sprite-container { width: 140px; height: 160px; background-image: url('img/1791821167050.jpg'); background-size: 700px 320px; background-repeat: no-repeat; image-rendering: pixelated; }
+        /* Motor de Recorte Corrigido para a Sprite Sheet */
+        .sprite-container { width: 110px; height: 150px; background-image: url('img/1791821167050.jpg'); background-size: 560px 310px; background-repeat: no-repeat; }
         
-        /* Posições exatas na folha de sprites */
-        .pose-idle { background-position: 0px 0px; }
-        .pose-walk { background-position: -140px 0px; }
-        .pose-punch { background-position: -280px 0px; }
-        .pose-kick { background-position: 0px -160px; }
-        .pose-special { background-position: -140px -160px; }
+        /* Posições exatas de cada pose na imagem */
+        .pose-idle { background-position: -12px -15px; }
+        .pose-walk { background-position: -125px -15px; }
+        .pose-punch { background-position: -350px -15px; }
+        .pose-kick { background-position: -125px -165px; }
+        .pose-special { background-position: -238px -165px; }
 
         .fighter-tag { color: #fff; font-size: 10px; background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 3px; margin-top: 2px; font-weight: bold; }
 
@@ -106,7 +106,7 @@
 
     <script>
         let p1X = 40;
-        let p2X = window.innerWidth - 180;
+        let p2X = window.innerWidth - 150;
         let p1Health = 100;
         let p2Health = 100;
         let emAcao = false;
@@ -120,106 +120,5 @@
 
         function atualizar() {
             f1.style.left = p1X + 'px';
-            f2.style.left = p2X + 'px';
-            hp1.style.width = p1Health + '%';
-            hp2.style.width = p2Health + '%';
-            
-            if(p2Health <= 0) {
-                alert("Vitória esmagadora de Rick!");
-                resetGame();
-            }
-        }
-
-        function definirPose(pose) {
-            s1.className = 'sprite-container ' + pose;
-        }
-
-        function acaoLutador(tipo) {
-            if (emAcao && tipo !== 'left' && tipo !== 'right') return;
-
-            if (tipo === 'right' && p1X < window.innerWidth - 150) {
-                p1X += 20;
-                definirPose('pose-walk');
-                setTimeout(() => definirPose('pose-idle'), 200);
-            } else if (tipo === 'left' && p1X > 10) {
-                p1X -= 20;
-                definirPose('pose-walk');
-                setTimeout(() => definirPose('pose-idle'), 200);
-            } else if (tipo === 'jump') {
-                emAcao = true;
-                f1.style.transform = 'translateY(-110px)';
-                definirPose('pose-walk');
-                setTimeout(() => {
-                    f1.style.transform = 'translateY(0px)';
-                    definirPose('pose-idle');
-                    emAcao = false;
-                }, 400);
-            } else if (tipo === 'soco') {
-                emAcao = true;
-                definirPose('pose-punch');
-                if (Math.abs(p1X - p2X) < 130) {
-                    p2Health -= 10;
-                    f2.style.filter = 'hue-rotate(180deg) brightness(2)';
-                    setTimeout(() => f2.style.filter = 'hue-rotate(180deg)', 150);
-                }
-                setTimeout(() => {
-                    definirPose('pose-idle');
-                    emAcao = false;
-                }, 250);
-            } else if (tipo === 'chute') {
-                emAcao = true;
-                definirPose('pose-kick');
-                if (Math.abs(p1X - p2X) < 130) {
-                    p2Health -= 15;
-                    f2.style.filter = 'hue-rotate(180deg) brightness(2)';
-                    setTimeout(() => f2.style.filter = 'hue-rotate(180deg)', 150);
-                }
-                setTimeout(() => {
-                    definirPose('pose-idle');
-                    emAcao = false;
-                }, 300);
-            } else if (tipo === 'especial') {
-                emAcao = true;
-                definirPose('pose-special');
-                
-                setTimeout(() => {
-                    dragon.style.display = 'block';
-                    let dragonX = p1X + 70;
-                    dragon.style.bottom = '90px';
-                    dragon.style.left = dragonX + 'px';
-
-                    let anim = setInterval(() => {
-                        dragonX += 30;
-                        dragon.style.left = dragonX + 'px';
-                        
-                        if (dragonX >= p2X) {
-                            p2Health -= 35;
-                            clearInterval(anim);
-                            dragon.style.display = 'none';
-                        }
-                        if (dragonX > window.innerWidth) {
-                            clearInterval(anim);
-                            dragon.style.display = 'none';
-                        }
-                    }, 25);
-                }, 150);
-
-                setTimeout(() => {
-                    definirPose('pose-idle');
-                    emAcao = false;
-                }, 500);
-            }
-            atualizar();
-        }
-
-        function resetGame() {
-            p1Health = 100;
-            p2Health = 100;
-            p1X = 40;
-            atualizar();
-        }
-
-        atualizar();
-    </script>
-</body>
-</html>
+            f2.style.left = p
+        
