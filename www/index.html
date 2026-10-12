@@ -1,145 +1,188 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#100d13">
-<title>Brutal Brawl: Arena dos Guerreiros</title>
-<style>
-:root{--red:#f43b43;--blue:#4aa8ff;--panel:#17131d;--cream:#fff2df}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08070b;color:var(--cream);font-family:system-ui,Arial,sans-serif;touch-action:none}
-#game{display:block;width:100vw;height:100dvh;background:#09070d}
-#hud{position:fixed;top:env(safe-area-inset-top,8px);left:0;right:0;padding:12px 12px 0;display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start;pointer-events:none;text-shadow:0 2px 5px #000}
-.name{font-weight:900;font-size:clamp(11px,2.8vw,17px);letter-spacing:1px;margin-bottom:5px}
-.bar{height:15px;border:2px solid #eee;border-radius:4px;background:#32151c;overflow:hidden;box-shadow:0 2px 8px #000}
-.fill{height:100%;width:100%;transition:width .12s linear}
-#pFill{background:linear-gradient(90deg,#ff9b45,#f52c42)}#eFill{background:linear-gradient(90deg,#36b7ff,#4561ff)}
-#timer{font-weight:1000;font-size:clamp(22px,5vw,34px);background:#18131e;border:2px solid #d5b47b;padding:2px 12px;border-radius:8px}
-#round{font-size:10px;text-align:center;letter-spacing:2px;color:#e6c58c;font-weight:800;margin-top:3px}
-#message{position:fixed;top:34%;left:0;right:0;text-align:center;font-size:clamp(27px,7vw,52px);font-weight:1000;letter-spacing:2px;color:white;text-shadow:0 4px 0 #9d162a,0 8px 20px #000;pointer-events:none}
-#subtitle{font-size:13px;color:#ffe1a6;text-shadow:0 2px 6px #000;letter-spacing:1px}
-#controls{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);display:flex;justify-content:space-between;align-items:end;padding:0 16px;gap:12px}
-.pad{display:grid;grid-template-columns:repeat(3, min(13vw,62px));grid-template-rows:repeat(2,min(13vw,62px));gap:5px}
-.actions{display:grid;grid-template-columns:repeat(2,min(15vw,72px));grid-template-rows:repeat(2,min(15vw,72px));gap:8px}
-.ctrl{border:2px solid #ffffff80;color:white;background:linear-gradient(145deg,#39313fdd,#141018ee);border-radius:50%;font-weight:900;font-size:clamp(11px,2.7vw,15px);box-shadow:0 4px 0 #050407, inset 0 1px #ffffff50;touch-action:none;user-select:none}
-.ctrl:active,.ctrl.down{transform:translateY(3px);filter:brightness(1.35);box-shadow:0 1px 0 #050407}
-.ctrl.special{background:linear-gradient(145deg,#ff674b,#a90e37);border-color:#ffd1a2}
-.ctrl.attack{background:linear-gradient(145deg,#4c91d6,#20366d)}
-#startScreen{position:fixed;inset:0;background:linear-gradient(160deg,#130c19ee,#07070cf5);display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;z-index:10}
-.card{max-width:520px;width:100%;border:1px solid #8d5b65;border-radius:20px;padding:24px 18px;background:linear-gradient(145deg,#251723,#100d15);box-shadow:0 20px 70px #000}
-.logo{font-size:clamp(32px,9vw,58px);line-height:.94;font-weight:1000;font-style:italic;letter-spacing:-2px;color:#fff;text-shadow:3px 4px 0 #b61b39,0 0 25px #f43b4370}
-.tag{color:#e8bd83;letter-spacing:3px;font-weight:900;font-size:11px;margin:14px 0 18px}
-#startBtn{width:100%;border:0;border-radius:12px;padding:16px;color:white;background:linear-gradient(90deg,#e92e47,#ff743e);font-weight:1000;font-size:17px;letter-spacing:1px;box-shadow:0 5px 0 #79162c}
-.small{font-size:12px;line-height:1.5;color:#c9bdc9;margin-top:14px}
-#pause{position:fixed;top:70px;right:12px;z-index:4;border:1px solid #ffffff70;background:#17131ddd;color:white;border-radius:8px;padding:8px 12px;font-weight:900}
-@media (orientation:portrait){#rotate{display:block!important}}
-#rotate{display:none;position:fixed;inset:0;z-index:8;background:#0a0810;color:white;text-align:center;padding:25vh 30px;font-weight:800;font-size:22px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mortal Brutal</title>
+    <style>
+        * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+        body { margin: 0; padding: 0; background: #0b0b0e; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100vh; width: 100vw; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        /* HUD Superior */
+        #hud { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(0,0,0,0.8); border-bottom: 2px solid #f43b43; z-index: 10; height: 15vh; }
+        .fighter-info { width: 40%; display: flex; flex-direction: column; gap: 4px; }
+        .fighter-name { color: #fff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .health-bar-container { width: 100%; height: 16px; background: #222; border: 2px solid #555; border-radius: 4px; overflow: hidden; position: relative; }
+        .health-bar { height: 100%; width: 100%; background: linear-gradient(90deg, #ff416c, #ff4b2b); transition: width 0.2s ease; }
+        #p2-health { background: linear-gradient(90deg, #2b86ff, #1355ff); }
+        .fighter-info.right { align-items: flex-end; }
+        
+        .round-counter { text-align: center; color: #ffd700; font-weight: 900; font-size: 16px; text-shadow: 0 0 10px rgba(255,215,0,0.6); }
+
+        /* Área do Jogo (Palco) */
+        #game-arena { position: relative; flex: 1; background: linear-gradient(to bottom, #1a1025, #3a1c38, #150813); overflow: hidden; display: flex; align-items: flex-end; }
+        .floor { position: absolute; bottom: 0; width: 100%; height: 25px; background: linear-gradient(to top, #4a0000, #150813); border-top: 2px solid #f43b43; }
+        
+        /* Lutadores */
+        .fighter { position: absolute; bottom: 20px; width: 90px; height: 160px; display: flex; flex-direction: column; align-items: center; transition: transform 0.1s; }
+        .fighter-sprite { width: 100%; height: 130px; background-size: contain; background-repeat: no-repeat; background-position: bottom; }
+        #fighter1 .fighter-sprite { background-image: url('https://i.imgur.com/828282.png'); filter: drop-shadow(0 0 5px #f43b43); } /* Placeholder visual dinâmico */
+        #fighter2 .fighter-sprite { background-image: url('https://i.imgur.com/828282.png'); transform: scaleX(-1); filter: drop-shadow(0 0 5px #2b86ff); }
+        .fighter-tag { color: #fff; font-size: 10px; background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 3px; margin-top: 2px; }
+
+        /* Efeito Especial / Projétil do Dragão */
+        .dragon-effect { position: absolute; width: 60px; height: 60px; background: radial-gradient(circle, #ff4b2b, #ff416c, transparent); border-radius: 50%; display: none; z-index: 5; box-shadow: 0 0 20px #ff4b2b; }
+
+        /* Comandos Táteis (Controles Mobile) */
+        #controls { height: 35vh; background: rgba(10,10,12,0.95); border-top: 2px solid #222; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; z-index: 20; }
+        .d-pad { display: grid; grid-template-columns: repeat(3, 45px); grid-template-rows: repeat(2, 45px); gap: 5px; }
+        .action-buttons { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; max-width: 55%; }
+        
+        .btn { background: #25252b; color: #fff; border: 2px solid #444; border-radius: 12px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; active-background: #444; box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
+        .btn:active { background: #f43b43; border-color: #ff4b2b; transform: scale(0.95); }
+        
+        .d-btn { width: 45px; height: 45px; font-size: 16px; background: #1c1c24; }
+        .action-btn { width: 65px; height: 50px; background: #1f1f2b; }
+        .special-btn { width: 110px; height: 50px; background: linear-gradient(135deg, #f43b43, #b31217); border-color: #ff4b2b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* Posicionamento dos direcionais */
+        .btn-left { grid-column: 1; grid-row: 2; }
+        .btn-right { grid-column: 3; grid-row: 2; }
+        .btn-jump { grid-column: 2; grid-row: 1; }
+    </style>
 </head>
 <body>
-<canvas id="game"></canvas>
-<div id="hud">
-  <div><div class="name">RICK • LUTADOR</div><div class="bar"><div class="fill" id="pFill"></div></div></div>
-  <div><div id="timer">99</div><div id="round">ROUND 1</div></div>
-  <div style="text-align:right"><div class="name">GUERREIRO SOMBRIO</div><div class="bar"><div class="fill" id="eFill"></div></div></div>
-</div>
-<div id="message">PREPARE-SE!</div>
-<button id="pause">Ⅱ</button>
-<div id="controls">
-  <div class="pad">
-    <div></div><button class="ctrl" data-key="up">PULAR</button><div></div>
-    <button class="ctrl" data-key="left">◀</button><button class="ctrl" data-key="down">DEF</button><button class="ctrl" data-key="right">▶</button>
-  </div>
-  <div class="actions">
-    <button class="ctrl attack" data-key="punch">SOCO</button><button class="ctrl attack" data-key="kick">CHUTE</button>
-    <button class="ctrl special" data-key="special" style="grid-column:span 2;border-radius:18px">GOLPE ESPECIAL</button>
-  </div>
-</div>
-<div id="rotate">↻<br>Vire o celular para jogar na horizontal</div>
-<div id="startScreen"><div class="card">
-  <div class="logo">BRUTAL<br>BRAWL</div>
-  <div class="tag">ARENA DOS GUERREIROS</div>
-  <p>Entre na arena, domine seus combos e derrote o adversário!</p>
-  <button id="startBtn">COMEÇAR A LUTA</button>
-  <div class="small">Protótipo jogável • controles de toque • inimigo com IA<br>Personagem inspirado em você, com traje preto e vermelho.</div>
-</div></div>
-<script>
-(() => {
-const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
-const pFill=document.getElementById('pFill'),eFill=document.getElementById('eFill'),timerEl=document.getElementById('timer'),message=document.getElementById('message'),roundEl=document.getElementById('round');
-let W=0,H=0,scale=1,last=0,elapsed=0,timeLeft=99,running=false,paused=false,ended=false,shake=0,particles=[];
-const keys={left:false,right:false,up:false,down:false,punch:false,kick:false,special:false};
-const player={x:.24,y:0,vx:0,vy:0,hp:100,face:1,attack:0,attackType:'',cool:0,stun:0,energy:0,ground:true,walk:0};
-const enemy={x:.74,y:0,vx:0,vy:0,hp:100,face:-1,attack:0,attackType:'',cool:1,stun:0,energy:0,ground:true,walk:0};
-function resize(){W=canvas.width=innerWidth*devicePixelRatio;H=canvas.height=innerHeight*devicePixelRatio;scale=devicePixelRatio;ctx.setTransform(scale,0,0,scale,0,0);W=innerWidth;H=innerHeight}
-addEventListener('resize',resize);resize();
-function floorY(){return H*.76}
-function say(t,ms=1200){message.innerHTML=t;message.style.display='block';if(ms>0)setTimeout(()=>{if(running&&!ended)message.style.display='none'},ms)}
-function burst(x,y,color,n=12){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-.5)*420,vy:(Math.random()-.7)*360,life:.35+Math.random()*.35,color,size:2+Math.random()*5})}
-function attack(f,type){if(f.cool>0||f.stun>0||!f.ground)return;f.attack=.22;f.attackType=type;f.cool=type==='special'?.8:type==='kick'?.48:.34;if(f===player&&type==='special'){if(f.energy<35){say('ENERGIA INSUFICIENTE',700);return}f.energy-=35;burst(f.x*W,floorY()-90,'#ff493f',28)}}
-function hit(a,b){let range=a.attackType==='special'?Math.min(W*.4,210):a.attackType==='kick'?90:70;let ax=a.x*W,bx=b.x*W;return Math.abs(ax-bx)<range&&Math.abs(a.y-b.y)<70&&a.face===Math.sign(bx-ax)}
-function doHit(a,b){if(a.attack>0&&a.attack<.11&&hit(a,b)&&!a.didHit){a.didHit=true;b.hp=Math.max(0,b.hp-(a.attackType==='special'?22:a.attackType==='kick'?12:8));b.stun=.2;b.vx=a.face*(a.attackType==='special'?360:180);shake=9;burst(b.x*W,floorY()-80,a.attackType==='special'?'#ff3c35':'#ffca86',a.attackType==='special'?24:10);if(a===player)a.energy=Math.min(100,a.energy+12);else b.energy=Math.min(100,b.energy+8)}}
-function updateF(f,dt,isEnemy){
- f.cool=Math.max(0,f.cool-dt);f.stun=Math.max(0,f.stun-dt);f.attack=Math.max(0,f.attack-dt);if(f.attack===0)f.didHit=false;
- if(f.stun>0){f.x+=f.vx/W*dt;f.vx*=.88;return}
- const other=isEnemy?player:enemy;f.face=Math.sign(other.x-f.x)||f.face;
- if(!isEnemy){
-   let dir=(keys.right?1:0)-(keys.left?1:0);f.vx=dir*260;f.x+=f.vx/W*dt;f.walk+=Math.abs(dir)*dt*10;
-   if(keys.up&&f.ground){f.vy=-590;f.ground=false}
-   if(keys.punch)attack(f,'punch');if(keys.kick)attack(f,'kick');if(keys.special)attack(f,'special');
- } else {
-   const d=other.x-f.x,dist=Math.abs(d);if(dist>110){f.vx=Math.sign(d)* (dist>240?140:65);f.x+=f.vx/W*dt;f.walk+=dt*7}else{f.vx=0;if(f.cool<=0&&Math.random()<dt*1.8)attack(f,Math.random()<.22?'special':Math.random()<.5?'kick':'punch')}
- }
- f.x=Math.max(.06,Math.min(.94,f.x));if(!f.ground){f.vy+=1450*dt;f.y+=f.vy*dt;if(f.y>=0){f.y=0;f.vy=0;f.ground=true}}
- doHit(f,other);
-}
-function drawBackground(){
- let g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#10162a');g.addColorStop(.5,'#3b1529');g.addColorStop(1,'#09080d');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
- // arena lights
- for(let i=0;i<8;i++){let x=W*i/7;ctx.fillStyle=i%2?'#448eff20':'#ff3b4725';ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x-90,H*.69);ctx.lineTo(x+90,H*.69);ctx.closePath();ctx.fill()}
- ctx.fillStyle='#100d16';ctx.fillRect(0,H*.57,W,H*.22);
- for(let i=0;i<12;i++){let x=i*W/11;ctx.fillStyle=i%2?'#d42e4824':'#4388cf24';ctx.fillRect(x,H*.58,3,H*.16)}
- ctx.fillStyle='#4a2634';ctx.fillRect(0,floorY(),W,H-floorY());
- ctx.fillStyle='#e85c6c';ctx.fillRect(0,floorY(),W,3);
- for(let i=0;i<10;i++){ctx.strokeStyle='#ffffff12';ctx.beginPath();ctx.moveTo(W/2,H*.58);ctx.lineTo(i*W/9,H);ctx.stroke()}
-}
-function fighter(f,isEnemy){
- const x=f.x*W,y=floorY()+f.y;ctx.save();ctx.translate(x,y);ctx.scale(f.face,1);
- ctx.globalAlpha=.28;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(0,0,38,9,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
- const attacking=f.attack>0, special=attacking&&f.attackType==='special',kick=attacking&&f.attackType==='kick';
- if(special){ctx.strokeStyle='#ff4a37';ctx.lineWidth=8;ctx.shadowColor='#ff2a38';ctx.shadowBlur=22;ctx.beginPath();ctx.arc(18,-86,50,-1.3,1.2);ctx.stroke();ctx.shadowBlur=0}
- // legs and boots
- ctx.lineCap='round';ctx.lineWidth=15;ctx.strokeStyle='#19151e';ctx.beginPath();ctx.moveTo(-12,-47);ctx.lineTo(-17,-12);ctx.lineTo(-28,-5);ctx.stroke();ctx.beginPath();ctx.moveTo(12,-47);ctx.lineTo(kick?55:17,-(kick?34:12));ctx.lineTo(kick?64:28,-5);ctx.stroke();
- ctx.fillStyle='#9b1d35';ctx.fillRect(-35,-9,20,7);ctx.fillRect(20,-9,20,7);
- // torso
- ctx.fillStyle=isEnemy?'#14243b':'#21151e';ctx.beginPath();ctx.moveTo(-24,-105);ctx.lineTo(23,-105);ctx.lineTo(29,-52);ctx.lineTo(-25,-52);ctx.closePath();ctx.fill();
- ctx.strokeStyle=isEnemy?'#3b8dd4':'#ed344b';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-20,-99);ctx.lineTo(0,-72);ctx.lineTo(21,-100);ctx.stroke();
- ctx.fillStyle='#17131a';ctx.fillRect(-25,-107,50,12);
- // arms
- ctx.strokeStyle='#c98f70';ctx.lineWidth=12;ctx.beginPath();ctx.moveTo(-20,-98);ctx.lineTo(-34,-77);ctx.lineTo(-30,-65);ctx.stroke();ctx.beginPath();ctx.moveTo(20,-98);ctx.lineTo(attacking?42:30,-83);ctx.lineTo(attacking?59:34,-83);ctx.stroke();
- ctx.fillStyle=isEnemy?'#2b79b8':'#c51e3b';ctx.fillRect(-39,-73,18,13);ctx.fillRect(attacking?47:25,-90,20,15);
- // neck and head
- ctx.fillStyle='#b97f62';ctx.fillRect(-8,-119,16,17);ctx.fillStyle='#d5a184';ctx.beginPath();ctx.arc(0,-132,19,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#17121a';ctx.beginPath();ctx.arc(0,-139,20,Math.PI,Math.PI*2);ctx.lineTo(17,-134);ctx.lineTo(-17,-134);ctx.fill();
- ctx.fillStyle='#171019';ctx.fillRect(2,-135,11,3);ctx.fillRect(-13,-135,8,3);ctx.strokeStyle='#3b2025';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-4,-122);ctx.lineTo(5,-121);ctx.stroke();
- if(!isEnemy){ctx.fillStyle='#f5f1ec';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillText('RICK',0,-158)}
- ctx.restore();
-}
-function render(dt){
- drawBackground();fighter(player,false);fighter(enemy,true);
- particles=particles.filter(p=>p.life>0);for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=500*dt;p.life-=dt;ctx.globalAlpha=Math.max(0,p.life*2);ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,p.size,p.size)}ctx.globalAlpha=1;
- if(shake>0)shake=Math.max(0,shake-dt*35);
- pFill.style.width=player.hp+'%';eFill.style.width=enemy.hp+'%';timerEl.textContent=Math.ceil(timeLeft);
-}
-function finish(win){ended=true;running=false;say(win?'VITÓRIA!':'DERROTA!',0);message.innerHTML=(win?'VITÓRIA! 🏆':'DERROTA!')+'<div id="subtitle">Toque em RECOMEÇAR para outra luta</div>';document.getElementById('startBtn').textContent='RECOMEÇAR';document.getElementById('startScreen').style.display='flex'}
-function loop(t){let dt=Math.min(.033,(t-last)/1000||0);last=t;if(running&&!paused&&!ended){timeLeft-=dt;updateF(player,dt,false);updateF(enemy,dt,true);if(player.hp<=0)finish(false);else if(enemy.hp<=0)finish(true);else if(timeLeft<=0)finish(player.hp>=enemy.hp)}render(dt);requestAnimationFrame(loop)}
-document.getElementById('startBtn').addEventListener('click',()=>{player.x=.24;player.y=0;player.vx=player.vy=0;player.hp=100;player.energy=0;player.cool=0;player.stun=0;player.attack=0;player.ground=true;enemy.x=.74;enemy.y=0;enemy.hp=100;enemy.cool=.7;enemy.energy=0;enemy.stun=0;enemy.attack=0;enemy.ground=true;timeLeft=99;ended=false;paused=false;running=true;document.getElementById('startScreen').style.display='none';say('LUTE!',800);last=performance.now()});
-document.getElementById('pause').addEventListener('click',()=>{if(!running)return;paused=!paused;say(paused?'PAUSADO':'CONTINUE!',700)});
-document.querySelectorAll('[data-key]').forEach(btn=>{const k=btn.dataset.key;const down=e=>{e.preventDefault();keys[k]=true;btn.classList.add('down');try{btn.setPointerCapture(e.pointerId)}catch{}};const up=e=>{e.preventDefault();keys[k]=false;btn.classList.remove('down')};btn.addEventListener('pointerdown',down);btn.addEventListener('pointerup',up);btn.addEventListener('pointercancel',up);btn.addEventListener('lostpointercapture',up)});
-addEventListener('keydown',e=>{const map={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',a:'punch',s:'kick',d:'special'};if(map[e.key])keys[map[e.key]]=true});
-addEventListener('keyup',e=>{const map={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',a:'punch',s:'kick',d:'special'};if(map[e.key])keys[map[e.key]]=false});
-requestAnimationFrame(loop);
-})();
-</script>
-</body></html>
+
+    <!-- HUD / Placar -->
+    <div id="hud">
+        <div class="fighter-info">
+            <span class="fighter-name">Rick</span>
+            <div class="health-bar-container"><div id="p1-health" class="health-bar"></div></div>
+        </div>
+        <div class="round-counter">MORTAL BRUTAL<br><span style="font-size:11px; color:#aaa;">ROUND 1</span></div>
+        <div class="fighter-info right">
+            <span class="fighter-name">Guerreiro Sombrio</span>
+            <div class="health-bar-container"><div id="p2-health" class="health-bar"></div></div>
+        </div>
+    </div>
+
+    <!-- Arena de Combate -->
+    <div id="game-arena">
+        <div class="floor"></div>
+        <div id="fighter1" class="fighter" style="left: 50px;">
+            <div class="fighter-sprite"></div>
+            <div class="fighter-tag">RICK</div>
+        </div>
+        <div id="fighter2" class="fighter" style="right: 50px;">
+            <div class="fighter-sprite"></div>
+            <div class="fighter-tag">SOMBRIO</div>
+        </div>
+        <div id="dragonBall" class="dragon-effect"></div>
+    </div>
+
+    <!-- Botões de Controlo Mobile -->
+    <div id="controls">
+        <div class="d-pad">
+            <div></div>
+            <button class="btn d-btn btn-jump" ontouchstart="mover('jump')" onclick="mover('jump')">▲</button>
+            <div></div>
+            <button class="btn d-btn btn-left" ontouchstart="mover('left')" onclick="mover('left')">◀</button>
+            <div></div>
+            <button class="btn d-btn btn-right" ontouchstart="mover('right')" onclick="mover('right')">▶</button>
+        </div>
+        <div class="action-buttons">
+            <button class="btn action-btn" ontouchstart="atacar('soco')" onclick="atacar('soco')">SOCO</button>
+            <button class="btn action-btn" ontouchstart="atacar('chute')" onclick="atacar('chute')">CHUTE</button>
+            <button class="btn special-btn" ontouchstart="atacar('especial')" onclick="atacar('especial')">PUNHO DRAGÃO</button>
+        </div>
+    </div>
+
+    <script>
+        let p1X = 50;
+        let p2X = window.innerWidth - 140;
+        let p1Health = 100;
+        let p2Health = 100;
+        let isJumping = false;
+
+        const f1 = document.getElementById('fighter1');
+        const f2 = document.getElementById('fighter2');
+        const hp1 = document.getElementById('p1-health');
+        const hp2 = document.getElementById('p2-health');
+        const dragon = document.getElementById('dragonBall');
+
+        function atualizarPosicoes() {
+            f1.style.left = p1X + 'px';
+            f2.style.left = p2X + 'px';
+            hp1.style.width = p1Health + '%';
+            hp2.style.width = p2Health + '%';
+            
+            if(p2Health <= 0) {
+                alert("Vitória de Rick!");
+                resetGame();
+            }
+        }
+
+        function mover(direcao) {
+            if(direcao === 'right' && p1X < window.innerWidth - 120) {
+                p1X += 25;
+            } else if(direcao === 'left' && p1X > 10) {
+                p1X -= 25;
+            } else if(direcao === 'jump' && !isJumping) {
+                isJumping = true;
+                f1.style.transform = 'translateY(-90px)';
+                setTimeout(() => {
+                    f1.style.transform = 'translateY(0px)';
+                    isJumping = false;
+                }, 350);
+            }
+            atualizarPosicoes();
+        }
+
+        function atacar(tipo) {
+            if(tipo === 'soco' || tipo === 'chute') {
+                // Verifica proximidade para dar Dano
+                if(Math.abs(p1X - p2X) < 110) {
+                    p2Health -= (tipo === 'soco' ? 8 : 12);
+                    if(p2Health < 0) p2Health = 0;
+                    // Efeito visual de dano no oponente
+                    f2.style.transform = 'scale(0.9) translateX(10px)';
+                    setTimeout(() => f2.style.transform = 'none', 100);
+                }
+            } else if(tipo === 'especial') {
+                // Ataque Punho do Dragão (Projétil de Fogo)
+                dragon.style.display = 'block';
+                let dragonX = p1X + 50;
+                dragon.style.bottom = '90px';
+                dragon.style.left = dragonX + 'px';
+
+                let anim = setInterval(() => {
+                    dragonX += 25;
+                    dragon.style.left = dragonX + 'px';
+                    
+                    // Colisão com o oponente
+                    if(dragonX >= p2X) {
+                        p2Health -= 30;
+                        if(p2Health < 0) p2Health = 0;
+                        clearInterval(anim);
+                        dragon.style.display = 'none';
+                    }
+                    if(dragonX > window.innerWidth) {
+                        clearInterval(anim);
+                        dragon.style.display = 'none';
+                    }
+                }, 30);
+            }
+            atualizarPosicoes();
+        }
+
+        function resetGame() {
+            p1Health = 100;
+            p2Health = 100;
+            p1X = 50;
+            atualizarPosicoes();
+        }
+
+        atualizarPosicoes();
+    </script>
+</body>
+</html>
