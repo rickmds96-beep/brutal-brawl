@@ -23,18 +23,16 @@
         #game-arena { position: relative; flex: 1; background: linear-gradient(to bottom, #150d20, #2c122b, #0b050a); overflow: hidden; display: flex; align-items: flex-end; }
         .floor { position: absolute; bottom: 0; width: 100%; height: 25px; background: linear-gradient(to top, #3a0000, #150813); border-top: 2px solid #f43b43; }
         
-        /* Lutador Base com Sprite Sheet Real */
+        /* Lutador Base com a Sprite Sheet Real */
         .fighter { position: absolute; bottom: 20px; width: 140px; height: 180px; display: flex; flex-direction: column; align-items: center; }
         
-        /* O Contentor do Sprite recorta a folha de imagens exata */
-        .sprite-container { width: 140px; height: 160px; background-image: url('img/rick-sprite-sheet.png'); background-size: 700px 320px; background-repeat: no-repeat; image-rendering: pixelated; }
+        /* Contentor do Sprite a apontar para o nome exato da imagem */
+        .sprite-container { width: 140px; height: 160px; background-image: url('img/1791821167050.jpg'); background-size: 700px 320px; background-repeat: no-repeat; image-rendering: pixelated; }
         
-        /* Posições relativas dos recortes na Sprite Sheet (5 colunas x 2 linhas) */
-        /* Linha 1: [0: Idle, 1: Walk, 2: Punch] */
+        /* Posições exatas na folha de sprites */
         .pose-idle { background-position: 0px 0px; }
         .pose-walk { background-position: -140px 0px; }
         .pose-punch { background-position: -280px 0px; }
-        /* Linha 2: [0: Kick, 1: Special] */
         .pose-kick { background-position: 0px -160px; }
         .pose-special { background-position: -140px -160px; }
 
@@ -77,13 +75,11 @@
     <div id="game-arena">
         <div class="floor"></div>
         
-        <!-- Jogador 1 (Rick com Sprite Animado) -->
         <div id="fighter1" class="fighter" style="left: 40px;">
             <div id="p1-sprite" class="sprite-container pose-idle"></div>
             <div class="fighter-tag">RICK</div>
         </div>
         
-        <!-- Jogador 2 (Adversário) -->
         <div id="fighter2" class="fighter" style="right: 40px;">
             <div id="p2-sprite" class="sprite-container pose-idle" style="transform: scaleX(-1); filter: hue-rotate(180deg);"></div>
             <div class="fighter-tag">SOMBRIO</div>
