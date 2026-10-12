@@ -1,51 +1,48 @@
-name: Gerar APK Android
+name: Build Android APK
 
-'on':
-workflow_dispatch:
-push:
-branches:
-- main
-
-permissions:
-contents: read
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-build-apk:
-runs-on: ubuntu-latest
-steps:
-- name: Baixar o projeto
-uses: actions/checkout@v4
+  build:
+    runs-on: ubuntu-latest
 
-- name: Configurar Node.js
-    uses: actions/setup-node@v4
-    with:
-      node-version: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-- name: Configurar Java
-    uses: actions/setup-java@v4
-    with:
-      distribution: temurin
-      java-version: 21
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-- name: Instalar dependências
-    run: npm install
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
 
-- name: Criar projeto Android
-    run: npx cap add android
+      - name: Install dependencies
+        run: npm install
 
-- name: Sincronizar assets
-    run: npx cap sync android
+      - name: Add Capacitor Android
+        run: npx cap add android
 
-- name: Compilar APK de teste
-    working-directory: android
-    run: |
-      chmod +x gradlew
-      ./gradlew assembleDebug
+      - name: Sync Capacitor
+        run: npx cap sync android
 
-- name: Disponibilizar APK para baixar
-    uses: actions/upload-artifact@v4
-    with:
-      name: Brutal-Brawl-APK-debug
-      path: android/app/build/outputs/apk/debug/app-debug.apk
-      if-no-files-found: error
-      retention-days: 14
+      - name: Build APK
+        run: |
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          
