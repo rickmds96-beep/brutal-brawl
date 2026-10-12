@@ -3,47 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mortal Brutal</title>
+    <title>Mortal Brutal - Arcade Engine</title>
     <style>
         * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
-        body { margin: 0; padding: 0; background: #0b0b0e; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100vh; width: 100vw; display: flex; flex-direction: column; justify-content: space-between; }
+        body { margin: 0; padding: 0; background: #050508; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100vh; width: 100vw; display: flex; flex-direction: column; justify-content: space-between; }
         
         /* HUD Superior */
-        #hud { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(0,0,0,0.8); border-bottom: 2px solid #f43b43; z-index: 10; height: 15vh; }
+        #hud { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(0,0,0,0.85); border-bottom: 2px solid #f43b43; z-index: 10; height: 14vh; }
         .fighter-info { width: 40%; display: flex; flex-direction: column; gap: 4px; }
         .fighter-name { color: #fff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        .health-bar-container { width: 100%; height: 16px; background: #222; border: 2px solid #555; border-radius: 4px; overflow: hidden; position: relative; }
-        .health-bar { height: 100%; width: 100%; background: linear-gradient(90deg, #ff416c, #ff4b2b); transition: width 0.2s ease; }
+        .health-bar-container { width: 100%; height: 16px; background: #1a1a22; border: 2px solid #444; border-radius: 4px; overflow: hidden; position: relative; }
+        .health-bar { height: 100%; width: 100%; background: linear-gradient(90deg, #ff416c, #ff4b2b); transition: width 0.15s ease; }
         #p2-health { background: linear-gradient(90deg, #2b86ff, #1355ff); }
         .fighter-info.right { align-items: flex-end; }
         
-        .round-counter { text-align: center; color: #ffd700; font-weight: 900; font-size: 16px; text-shadow: 0 0 10px rgba(255,215,0,0.6); }
+        .round-counter { text-align: center; color: #ffd700; font-weight: 900; font-size: 15px; text-shadow: 0 0 10px rgba(255,215,0,0.6); }
 
         /* Área do Jogo (Palco) */
-        #game-arena { position: relative; flex: 1; background: linear-gradient(to bottom, #1a1025, #3a1c38, #150813); overflow: hidden; display: flex; align-items: flex-end; }
-        .floor { position: absolute; bottom: 0; width: 100%; height: 25px; background: linear-gradient(to top, #4a0000, #150813); border-top: 2px solid #f43b43; }
+        #game-arena { position: relative; flex: 1; background: linear-gradient(to bottom, #150d20, #2c122b, #0b050a); overflow: hidden; display: flex; align-items: flex-end; }
+        .floor { position: absolute; bottom: 0; width: 100%; height: 25px; background: linear-gradient(to top, #3a0000, #150813); border-top: 2px solid #f43b43; }
         
-        /* Lutadores com a tua imagem real */
-        .fighter { position: absolute; bottom: 20px; width: 110px; height: 180px; display: flex; flex-direction: column; align-items: center; transition: transform 0.1s; }
-        .fighter-sprite { width: 100%; height: 150px; background-size: contain; background-repeat: no-repeat; background-position: bottom; }
-        #fighter1 .fighter-sprite { background-image: url('img/file_000000009630820ea50d045f0ab9e993.png'); filter: drop-shadow(0 0 8px #f43b43); }
-        #fighter2 .fighter-sprite { background-image: url('img/file_000000009630820ea50d045f0ab9e993.png'); transform: scaleX(-1); filter: drop-shadow(0 0 8px #2b86ff); }
-        .fighter-tag { color: #fff; font-size: 10px; background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 3px; margin-top: 2px; }
+        /* Lutador Base com Sprite Sheet Real */
+        .fighter { position: absolute; bottom: 20px; width: 140px; height: 180px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* O Contentor do Sprite recorta a folha de imagens exata */
+        .sprite-container { width: 140px; height: 160px; background-image: url('img/rick-sprite-sheet.png'); background-size: 700px 320px; background-repeat: no-repeat; image-rendering: pixelated; }
+        
+        /* Posições relativas dos recortes na Sprite Sheet (5 colunas x 2 linhas) */
+        /* Linha 1: [0: Idle, 1: Walk, 2: Punch] */
+        .pose-idle { background-position: 0px 0px; }
+        .pose-walk { background-position: -140px 0px; }
+        .pose-punch { background-position: -280px 0px; }
+        /* Linha 2: [0: Kick, 1: Special] */
+        .pose-kick { background-position: 0px -160px; }
+        .pose-special { background-position: -140px -160px; }
 
-        /* Efeito Especial / Projétil do Dragão */
-        .dragon-effect { position: absolute; width: 60px; height: 60px; background: radial-gradient(circle, #ff4b2b, #ff416c, transparent); border-radius: 50%; display: none; z-index: 5; box-shadow: 0 0 20px #ff4b2b; }
+        .fighter-tag { color: #fff; font-size: 10px; background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 3px; margin-top: 2px; font-weight: bold; }
+
+        /* Projétil do Especial */
+        .dragon-effect { position: absolute; width: 70px; height: 50px; background: radial-gradient(circle, #ff4b2b, #ff416c, transparent); border-radius: 50%; display: none; z-index: 5; box-shadow: 0 0 25px #ff4b2b; }
 
         /* Comandos Táteis (Controles Mobile) */
-        #controls { height: 35vh; background: rgba(10,10,12,0.95); border-top: 2px solid #222; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; z-index: 20; }
-        .d-pad { display: grid; grid-template-columns: repeat(3, 45px); grid-template-rows: repeat(2, 45px); gap: 5px; }
-        .action-buttons { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; max-width: 55%; }
+        #controls { height: 36vh; background: rgba(8,8,12,0.98); border-top: 2px solid #222; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; z-index: 20; }
+        .d-pad { display: grid; grid-template-columns: repeat(3, 46px); grid-template-rows: repeat(2, 46px); gap: 4px; }
+        .action-buttons { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; max-width: 58%; }
         
-        .btn { background: #25252b; color: #fff; border: 2px solid #444; border-radius: 12px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
+        .btn { background: #1c1c24; color: #fff; border: 2px solid #333; border-radius: 12px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
         .btn:active { background: #f43b43; border-color: #ff4b2b; transform: scale(0.95); }
         
-        .d-btn { width: 45px; height: 45px; font-size: 16px; background: #1c1c24; }
-        .action-btn { width: 65px; height: 50px; background: #1f1f2b; }
-        .special-btn { width: 110px; height: 50px; background: linear-gradient(135deg, #f43b43, #b31217); border-color: #ff4b2b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .d-btn { width: 46px; height: 46px; font-size: 16px; background: #15151c; }
+        .action-btn { width: 64px; height: 48px; background: #1a1a24; }
+        .special-btn { width: 115px; height: 48px; background: linear-gradient(135deg, #f43b43, #b31217); border-color: #ff4b2b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
         
         .btn-left { grid-column: 1; grid-row: 2; }
         .btn-right { grid-column: 3; grid-row: 2; }
@@ -57,7 +67,7 @@
             <span class="fighter-name">Rick</span>
             <div class="health-bar-container"><div id="p1-health" class="health-bar"></div></div>
         </div>
-        <div class="round-counter">MORTAL BRUTAL<br><span style="font-size:11px; color:#aaa;">ROUND 1</span></div>
+        <div class="round-counter">MORTAL BRUTAL<br><span style="font-size:10px; color:#aaa;">ARCADE ENGINE</span></div>
         <div class="fighter-info right">
             <span class="fighter-name">Guerreiro Sombrio</span>
             <div class="health-bar-container"><div id="p2-health" class="health-bar"></div></div>
@@ -66,115 +76,154 @@
 
     <div id="game-arena">
         <div class="floor"></div>
-        <div id="fighter1" class="fighter" style="left: 50px;">
-            <div class="fighter-sprite"></div>
+        
+        <!-- Jogador 1 (Rick com Sprite Animado) -->
+        <div id="fighter1" class="fighter" style="left: 40px;">
+            <div id="p1-sprite" class="sprite-container pose-idle"></div>
             <div class="fighter-tag">RICK</div>
         </div>
-        <div id="fighter2" class="fighter" style="right: 50px;">
-            <div class="fighter-sprite"></div>
+        
+        <!-- Jogador 2 (Adversário) -->
+        <div id="fighter2" class="fighter" style="right: 40px;">
+            <div id="p2-sprite" class="sprite-container pose-idle" style="transform: scaleX(-1); filter: hue-rotate(180deg);"></div>
             <div class="fighter-tag">SOMBRIO</div>
         </div>
+        
         <div id="dragonBall" class="dragon-effect"></div>
     </div>
 
     <div id="controls">
         <div class="d-pad">
             <div></div>
-            <button class="btn d-btn btn-jump" ontouchstart="mover('jump')" onclick="mover('jump')">▲</button>
+            <button class="btn d-btn btn-jump" ontouchstart="acaoLutador('jump')" onclick="acaoLutador('jump')">▲</button>
             <div></div>
-            <button class="btn d-btn btn-left" ontouchstart="mover('left')" onclick="mover('left')">◀</button>
+            <button class="btn d-btn btn-left" ontouchstart="acaoLutador('left')" onclick="acaoLutador('left')">◀</button>
             <div></div>
-            <button class="btn d-btn btn-right" ontouchstart="mover('right')" onclick="mover('right')">▶</button>
+            <button class="btn d-btn btn-right" ontouchstart="acaoLutador('right')" onclick="acaoLutador('right')">▶</button>
         </div>
         <div class="action-buttons">
-            <button class="btn action-btn" ontouchstart="atacar('soco')" onclick="atacar('soco')">SOCO</button>
-            <button class="btn action-btn" ontouchstart="atacar('chute')" onclick="atacar('chute')">CHUTE</button>
-            <button class="btn special-btn" ontouchstart="atacar('especial')" onclick="atacar('especial')">PUNHO DRAGÃO</button>
+            <button class="btn action-btn" ontouchstart="acaoLutador('soco')" onclick="acaoLutador('soco')">SOCO</button>
+            <button class="btn action-btn" ontouchstart="acaoLutador('chute')" onclick="acaoLutador('chute')">CHUTE</button>
+            <button class="btn special-btn" ontouchstart="acaoLutador('especial')" onclick="acaoLutador('especial')">PUNHO DRAGÃO</button>
         </div>
     </div>
 
     <script>
-        let p1X = 50;
-        let p2X = window.innerWidth - 140;
+        let p1X = 40;
+        let p2X = window.innerWidth - 180;
         let p1Health = 100;
         let p2Health = 100;
-        let isJumping = false;
+        let emAcao = false;
 
         const f1 = document.getElementById('fighter1');
         const f2 = document.getElementById('fighter2');
+        const s1 = document.getElementById('p1-sprite');
         const hp1 = document.getElementById('p1-health');
         const hp2 = document.getElementById('p2-health');
         const dragon = document.getElementById('dragonBall');
 
-        function atualizarPosicoes() {
+        function atualizar() {
             f1.style.left = p1X + 'px';
             f2.style.left = p2X + 'px';
             hp1.style.width = p1Health + '%';
             hp2.style.width = p2Health + '%';
             
             if(p2Health <= 0) {
-                alert("Vitória de Rick!");
+                alert("Vitória esmagadora de Rick!");
                 resetGame();
             }
         }
 
-        function mover(direcao) {
-            if(direcao === 'right' && p1X < window.innerWidth - 120) {
-                p1X += 25;
-            } else if(direcao === 'left' && p1X > 10) {
-                p1X -= 25;
-            } else if(direcao === 'jump' && !isJumping) {
-                isJumping = true;
-                f1.style.transform = 'translateY(-90px)';
-                setTimeout(() => {
-                    f1.style.transform = 'translateY(0px)';
-                    isJumping = false;
-                }, 350);
-            }
-            atualizarPosicoes();
+        function definirPose(pose) {
+            s1.className = 'sprite-container ' + pose;
         }
 
-        function atacar(tipo) {
-            if(tipo === 'soco' || tipo === 'chute') {
-                if(Math.abs(p1X - p2X) < 110) {
-                    p2Health -= (tipo === 'soco' ? 8 : 12);
-                    if(p2Health < 0) p2Health = 0;
-                    f2.style.transform = 'scale(0.9) translateX(10px) scaleX(-1)';
-                    setTimeout(() => f2.style.transform = 'scaleX(-1)', 100);
-                }
-            } else if(tipo === 'especial') {
-                dragon.style.display = 'block';
-                let dragonX = p1X + 50;
-                dragon.style.bottom = '90px';
-                dragon.style.left = dragonX + 'px';
+        function acaoLutador(tipo) {
+            if (emAcao && tipo !== 'left' && tipo !== 'right') return;
 
-                let anim = setInterval(() => {
-                    dragonX += 25;
+            if (tipo === 'right' && p1X < window.innerWidth - 150) {
+                p1X += 20;
+                definirPose('pose-walk');
+                setTimeout(() => definirPose('pose-idle'), 200);
+            } else if (tipo === 'left' && p1X > 10) {
+                p1X -= 20;
+                definirPose('pose-walk');
+                setTimeout(() => definirPose('pose-idle'), 200);
+            } else if (tipo === 'jump') {
+                emAcao = true;
+                f1.style.transform = 'translateY(-110px)';
+                definirPose('pose-walk');
+                setTimeout(() => {
+                    f1.style.transform = 'translateY(0px)';
+                    definirPose('pose-idle');
+                    emAcao = false;
+                }, 400);
+            } else if (tipo === 'soco') {
+                emAcao = true;
+                definirPose('pose-punch');
+                if (Math.abs(p1X - p2X) < 130) {
+                    p2Health -= 10;
+                    f2.style.filter = 'hue-rotate(180deg) brightness(2)';
+                    setTimeout(() => f2.style.filter = 'hue-rotate(180deg)', 150);
+                }
+                setTimeout(() => {
+                    definirPose('pose-idle');
+                    emAcao = false;
+                }, 250);
+            } else if (tipo === 'chute') {
+                emAcao = true;
+                definirPose('pose-kick');
+                if (Math.abs(p1X - p2X) < 130) {
+                    p2Health -= 15;
+                    f2.style.filter = 'hue-rotate(180deg) brightness(2)';
+                    setTimeout(() => f2.style.filter = 'hue-rotate(180deg)', 150);
+                }
+                setTimeout(() => {
+                    definirPose('pose-idle');
+                    emAcao = false;
+                }, 300);
+            } else if (tipo === 'especial') {
+                emAcao = true;
+                definirPose('pose-special');
+                
+                setTimeout(() => {
+                    dragon.style.display = 'block';
+                    let dragonX = p1X + 70;
+                    dragon.style.bottom = '90px';
                     dragon.style.left = dragonX + 'px';
-                    
-                    if(dragonX >= p2X) {
-                        p2Health -= 30;
-                        if(p2Health < 0) p2Health = 0;
-                        clearInterval(anim);
-                        dragon.style.display = 'none';
-                    }
-                    if(dragonX > window.innerWidth) {
-                        clearInterval(anim);
-                        dragon.style.display = 'none';
-                    }
-                }, 30);
+
+                    let anim = setInterval(() => {
+                        dragonX += 30;
+                        dragon.style.left = dragonX + 'px';
+                        
+                        if (dragonX >= p2X) {
+                            p2Health -= 35;
+                            clearInterval(anim);
+                            dragon.style.display = 'none';
+                        }
+                        if (dragonX > window.innerWidth) {
+                            clearInterval(anim);
+                            dragon.style.display = 'none';
+                        }
+                    }, 25);
+                }, 150);
+
+                setTimeout(() => {
+                    definirPose('pose-idle');
+                    emAcao = false;
+                }, 500);
             }
-            atualizarPosicoes();
+            atualizar();
         }
 
         function resetGame() {
             p1Health = 100;
             p2Health = 100;
-            p1X = 50;
-            atualizarPosicoes();
+            p1X = 40;
+            atualizar();
         }
 
-        atualizarPosicoes();
+        atualizar();
     </script>
 </body>
 </html>
