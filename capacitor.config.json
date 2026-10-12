@@ -1,0 +1,8 @@
+{
+  "appId": "com.jogosmodsglobal.brutalbrawl",
+  "appName": "Brutal Brawl",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

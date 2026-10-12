@@ -1,0 +1,16 @@
+{
+  "name": "brutal-brawl-arena",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Brutal Brawl: Arena dos Guerreiros - protótipo de jogo de luta Android",
+  "scripts": {
+    "build": "node -e \"console.log('Assets web prontos em www/')\""
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3"
+  }
+}
