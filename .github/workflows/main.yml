@@ -16,33 +16,33 @@ steps:
 - name: Baixar o projeto
 uses: actions/checkout@v4
 
-  - name: Configurar Node.js
+- name: Configurar Node.js
     uses: actions/setup-node@v4
     with:
       node-version: 20
 
-  - name: Configurar Java
+- name: Configurar Java
     uses: actions/setup-java@v4
     with:
       distribution: temurin
       java-version: 21
 
-  - name: Instalar dependências
+- name: Instalar dependências
     run: npm install
 
-  - name: Criar projeto Android
+- name: Criar projeto Android
     run: npx cap add android
 
-  - name: Sincronizar assets
+- name: Sincronizar assets
     run: npx cap sync android
 
-  - name: Compilar APK de teste
+- name: Compilar APK de teste
     working-directory: android
     run: |
       chmod +x gradlew
       ./gradlew assembleDebug
 
-  - name: Disponibilizar APK para baixar
+- name: Disponibilizar APK para baixar
     uses: actions/upload-artifact@v4
     with:
       name: Brutal-Brawl-APK-debug
